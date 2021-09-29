@@ -33,7 +33,9 @@
 			},
 			modelColor: {
 				type: 'string'
-			}
+			},
+			displayMode: {
+				type: 'string'
 			}
 		},
 
@@ -42,10 +44,12 @@
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
 			if (!attributes.blockSize) props.setAttributes({blockSize: 'sm'});
 			if (!attributes.modelColor) props.setAttributes({modelColor: '#777777'});
+			if (!attributes.displayMode) props.setAttributes({displayMode: 'flat'});
 
 			var modelsLoadedCallback = function() {
 				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
 				stlPreview.set_color(0, attributes.modelColor);
+				stlPreview.set_display(0, attributes.displayMode);
 			}
 
 			var sizeChangedObserved = function () {
@@ -76,10 +80,15 @@
 			var onSizeSelectChange = function(newValue) {
 				props.setAttributes({blockSize: newValue});
 			};
-			
+
 			var onModelColorChanged = function(newColor) {
 				props.setAttributes({modelColor: newColor.hex});
 				if (stlPreview.models_count) stlPreview.set_color(0, newColor.hex);
+			}
+
+			var onDisplayModeChange = function(newValue) {
+				props.setAttributes({displayMode: newValue});
+				if (stlPreview.models_count) stlPreview.set_display(0, newValue);
 			}
 
 			return [el('div',
@@ -112,6 +121,10 @@
 					{value: 'sm', label: __('Small')},
 					{value: 'md', label: __('Medium')},
 					{value: 'lg', label: __('Large')}], onChange: onSizeSelectChange}),
+				el(SelectControl, {label: __('Display Mode'), value: attributes.displayMode, options: [
+					{value: 'flat', label: __('Flat')},
+					{value: 'smooth', label: __('Smooth')},
+					{value: 'wireframe', label: __('Wireframe')}], onChange: onDisplayModeChange}),
 				el('label', {}, __('Model Color')),
 				el(ColorPicker, {color: attributes.modelColor, disableAlpha: true, onChangeComplete: onModelColorChanged})
 				])
