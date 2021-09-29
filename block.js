@@ -1,8 +1,11 @@
-( function( blocks, editor, i18n, element, components, _ ) {
+( function( blocks, blockEditor, i18n, element, components, _ ) {
 	var __ = i18n.__;
 	var el = element.createElement;
-	var RichText = editor.RichText;
-	var MediaUpload = editor.MediaUpload;
+	var RichText = blockEditor.RichText;
+	var MediaUpload = blockEditor.MediaUpload;
+	var InspectorControls = blockEditor.InspectorControls;
+	var PanelBody = components.PanelBody;
+	var SelectControl = components.SelectControl;
 	var stlPreview;
 
 	blocks.registerBlockType( 'embed-stl/embed-stl', {
@@ -23,18 +26,33 @@
 			},
 			blockID: {
 				type: 'string'
+			},
+			blockSize: {
+				type: 'string'
 			}
 		},
 
 		edit: function( props ) {
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
+			if (!attributes.blockSize) props.setAttributes({blockSize: 'sm'});
+
+			var modelsLoadedCallback = function() {
+				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
+			}
+
+			var sizeChangedObserved = function () {
+				stlPreview.do_resize();
+				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
+			}
 
 			if (!stlPreview) {
 				var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
 				if (previewElement) {
-					stlPreview = new StlViewer(previewElement);
+					stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1});
 					if (attributes.mediaURL) stlPreview.add_model({id: 0, filename:attributes.mediaURL});
+					const obs = new MutationObserver(sizeChangedObserved);
+					obs.observe(previewElement, {attributes: true});
 				}
 			}
 
@@ -48,13 +66,15 @@
 				} );
 			};
 
-			return el(
-				'div',
+			var onSizeSelectChange = function(newValue) {
+				props.setAttributes({blockSize: newValue});
+			};
+
+			return [el('div',
 				{ className: props.className },
-				el(
-					'div',
+				el('div',
 					{ className: 'selected-model' },
-					[ el( MediaUpload, {
+					[ el(MediaUpload, {
 						onSelect: onSelectImage,
 						allowedTypes: 'application/sla',
 						value: attributes.mediaID,
@@ -69,14 +89,19 @@
 							);
 						},
 					} ),
-					el( 'span', {className: 'embed-stl-media-desc'}, attributes.mediaDesc)
+					el('span', {className: 'embed-stl-media-desc'}, attributes.mediaDesc)
 					]
 				),
-				el(
-					'div',
-					{ id: 'stl-preview-' + attributes.blockID }
-				)
-			);
+				el('div', { id: 'stl-preview-' + attributes.blockID,
+					className: "embed-stl-size-" + attributes.blockSize})
+			),
+			el(InspectorControls, {}, el(PanelBody, {title: __('Settings')}, [
+				el(SelectControl, {label: __('Size'), value: attributes.blockSize, options: [
+					{value: 'sm', label: __('Small')},
+					{value: 'md', label: __('Medium')},
+					{value: 'lg', label: __('Large')}], onChange: onSizeSelectChange})
+				])
+			)];
 		}
 	} );
 } )(
