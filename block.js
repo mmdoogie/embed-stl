@@ -6,6 +6,7 @@
 	var InspectorControls = blockEditor.InspectorControls;
 	var PanelBody = components.PanelBody;
 	var SelectControl = components.SelectControl;
+	var ColorPicker = components.ColorPicker;
 	var stlPreview;
 
 	blocks.registerBlockType( 'embed-stl/embed-stl', {
@@ -29,6 +30,10 @@
 			},
 			blockSize: {
 				type: 'string'
+			},
+			modelColor: {
+				type: 'string'
+			}
 			}
 		},
 
@@ -36,9 +41,11 @@
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
 			if (!attributes.blockSize) props.setAttributes({blockSize: 'sm'});
+			if (!attributes.modelColor) props.setAttributes({modelColor: '#777777'});
 
 			var modelsLoadedCallback = function() {
 				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
+				stlPreview.set_color(0, attributes.modelColor);
 			}
 
 			var sizeChangedObserved = function () {
@@ -69,6 +76,11 @@
 			var onSizeSelectChange = function(newValue) {
 				props.setAttributes({blockSize: newValue});
 			};
+			
+			var onModelColorChanged = function(newColor) {
+				props.setAttributes({modelColor: newColor.hex});
+				if (stlPreview.models_count) stlPreview.set_color(0, newColor.hex);
+			}
 
 			return [el('div',
 				{ className: props.className },
@@ -99,7 +111,9 @@
 				el(SelectControl, {label: __('Size'), value: attributes.blockSize, options: [
 					{value: 'sm', label: __('Small')},
 					{value: 'md', label: __('Medium')},
-					{value: 'lg', label: __('Large')}], onChange: onSizeSelectChange})
+					{value: 'lg', label: __('Large')}], onChange: onSizeSelectChange}),
+				el('label', {}, __('Model Color')),
+				el(ColorPicker, {color: attributes.modelColor, disableAlpha: true, onChangeComplete: onModelColorChanged})
 				])
 			)];
 		}
