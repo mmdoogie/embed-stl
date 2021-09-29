@@ -3,6 +3,7 @@
 	var el = element.createElement;
 	var RichText = editor.RichText;
 	var MediaUpload = editor.MediaUpload;
+	var stlPreview;
 
 	blocks.registerBlockType( 'embed-stl/embed-stl', {
 		title: __( 'Embed STL'),
@@ -11,13 +12,11 @@
 		keywords: ['3d', 'model', 'stl'],
 		
 		attributes: {
-			title: {
-				type: 'array',
-				source: 'children',
-				selector: 'h2',
-			},
 			mediaID: {
 				type: 'number',
+			},
+			mediaDesc: {
+				type: 'string',
 			},
 			mediaURL: {
 				type: 'string',
@@ -31,30 +30,31 @@
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
 
+			if (!stlPreview) {
+				var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
+				if (previewElement) {
+					stlPreview = new StlViewer(previewElement);
+					if (attributes.mediaURL) stlPreview.add_model({id: 0, filename:attributes.mediaURL});
+				}
+			}
+
 			var onSelectImage = function( media ) {
-				var stlpreview = new StlViewer(document.getElementById('stl-preview-' + attributes.blockID), {models: [{id: 0, filename:media.url}]});
+				if (stlPreview.models_count) stlPreview.remove_model(0);
+				if (media.url) stlPreview.add_model({id: 0, filename:media.url});
+
 				return props.setAttributes( {
 					mediaURL: media.url,
-					mediaID: media.id,
+					mediaDesc: media.id + ": " + media.title + " (" + media.filename + ")",
 				} );
 			};
 
 			return el(
 				'div',
 				{ className: props.className },
-				el( RichText, {
-					tagName: 'h2',
-					inline: true,
-					placeholder: __('Display Title'),
-					value: attributes.title,
-					onChange: function( value ) {
-						props.setAttributes( { title: value } );
-					},
-				} ),
 				el(
 					'div',
 					{ className: 'selected-model' },
-					el( MediaUpload, {
+					[ el( MediaUpload, {
 						onSelect: onSelectImage,
 						allowedTypes: 'application/sla',
 						value: attributes.mediaID,
@@ -63,12 +63,14 @@
 								components.Button,
 								{
 									onClick: obj.open,
-									variant: attributes.mediaID ? 'link' : 'primary',
-								},
-								attributes.mediaID ? attributes.mediaURL : __('Media Browser')
+									isPrimary: true,
+									text: __('Select Media')
+								}
 							);
 						},
-					} )
+					} ),
+					el( 'span', {className: 'embed-stl-media-desc'}, attributes.mediaDesc)
+					]
 				),
 				el(
 					'div',
