@@ -24,3 +24,15 @@
 .embed-stl-hidden {
 	display: none;
 }
+
+.embed-stl-target {
+	position: relative;
+}
+
+.embed-stl-target > .embed-stl-cube-icon {
+	width: 48px;
+	height: 48px;
+	position: absolute;
+	left: 7px;
+	bottom: 0px;
+}
