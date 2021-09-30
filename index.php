@@ -55,7 +55,21 @@ function embed_stl_add_post_mime($mime_types=array()) {
 }
 
 function embed_stl_render_callback($attrs, $content) {
-	return "<div><h2>" . $attrs['title'] . "</h2></div><div id='stl-preview-" . $attrs['blockID'] . "'></div><script>var stlView_" . $attrs['blockID'] . " = new StlViewer(document.getElementById('stl-preview-" . $attrs['blockID'] . "'), {models:[{id:0,filename:'" . $attrs['mediaURL'] . "'}]});</script>";
+	ob_start();
+?>
+<div class="wp-block-embed-stl-embed-stl">
+	<div id="stl-preview-<?=$attrs['blockID']?>" class="embed-stl-size-<?=$attrs['blockSize']?> <?= $attrs['showBorder'] ? 'embed-stl-yes-border' : ''?>">
+	</div>
+	<script>
+		var e = document.getElementById("stl-preview-<?=$attrs['blockID']?>");
+		var stlView_<?=$attrs['blockID']?> = new StlViewer(e, {
+			models: [{id: 0, filename: "<?=$attrs['mediaURL']?>", color: "<?=$attrs['modelColor']?>", display: "<?=$attrs['displayMode']?>"}],
+			bg_color: "<?=$attrs['solidBackground'] ? $attrs['backgroundColor'] : 'transparent'?>", auto_rotate: <?=$attrs['autoRotate'] ? 'true' : 'false'?>, grid: <?=$attrs['showGrid'] ? 'true' : 'false'?>});
+	</script>
+</div>
+<?php
+	$out = ob_get_contents();
+	ob_end_clean();
+	return $out;
 }
-
 ?>
