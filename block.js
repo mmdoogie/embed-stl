@@ -77,13 +77,15 @@
 				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
 			}
 
-			if (!stlPreview) {
-				var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
-				if (previewElement) {
-					stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1});
-					if (attributes.mediaURL) stlPreview.add_model({id: 0, filename:attributes.mediaURL});
-					const obs = new MutationObserver(sizeChangedObserved);
-					obs.observe(previewElement, {attributes: true});
+			var setupPreview = function() {
+				if (!stlPreview) {
+					var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
+					if (previewElement) {
+						stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1});
+						if (attributes.mediaURL) stlPreview.add_model({id: 0, filename:attributes.mediaURL});
+						const obs = new MutationObserver(sizeChangedObserved);
+						obs.observe(previewElement, {attributes: true});
+					}
 				}
 			}
 
@@ -139,6 +141,8 @@
 				if (attributes.solidBackground && stlPreview.models_count) stlPreview.set_bg_color(newColor.hex);
 			}
 
+			if (attributes.mediaURL) setupPreview();
+
 			return [el('div',
 				{ className: props.className },
 				el('div',
@@ -151,7 +155,7 @@
 							return el(
 								components.Button,
 								{
-									onClick: obj.open,
+									onClick: function() {obj.open(); setupPreview();},
 									isPrimary: true,
 									text: __('Select Media')
 								}
