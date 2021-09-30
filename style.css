@@ -16,3 +16,11 @@
 	width: 100%;
 	height: 75vh;
 }
+
+.embed-stl-yes-border > canvas {
+	border: 1px solid black;
+}
+
+.embed-stl-hidden {
+	display: none;
+}

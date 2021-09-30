@@ -7,6 +7,7 @@
 	var PanelBody = components.PanelBody;
 	var SelectControl = components.SelectControl;
 	var ColorPicker = components.ColorPicker;
+	var ToggleControl = components.ToggleControl;
 	var stlPreview;
 
 	blocks.registerBlockType( 'embed-stl/embed-stl', {
@@ -17,13 +18,13 @@
 		
 		attributes: {
 			mediaID: {
-				type: 'number',
+				type: 'number'
 			},
 			mediaDesc: {
-				type: 'string',
+				type: 'string'
 			},
 			mediaURL: {
-				type: 'string',
+				type: 'string'
 			},
 			blockID: {
 				type: 'string'
@@ -36,6 +37,21 @@
 			},
 			displayMode: {
 				type: 'string'
+			},
+			showGrid: {
+				type: 'boolean'
+			},
+			autoRotate: {
+				type: 'boolean'
+			},
+			showBorder: {
+				type: 'boolean'
+			},
+			solidBackground: {
+				type: 'boolean'
+			},
+			backgroundColor: {
+				type: 'string'
 			}
 		},
 
@@ -45,11 +61,15 @@
 			if (!attributes.blockSize) props.setAttributes({blockSize: 'sm'});
 			if (!attributes.modelColor) props.setAttributes({modelColor: '#777777'});
 			if (!attributes.displayMode) props.setAttributes({displayMode: 'flat'});
+			if (!attributes.backgroundColor) props.setAttributes({backgroundColor: '#ffffff'});
 
 			var modelsLoadedCallback = function() {
 				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
 				stlPreview.set_color(0, attributes.modelColor);
 				stlPreview.set_display(0, attributes.displayMode);
+				stlPreview.set_grid(attributes.showGrid);
+				stlPreview.set_auto_rotate(attributes.autoRotate);
+				if (attributes.solidBackground) stlPreview.set_bg_color(attributes.backgroundColor);
 			}
 
 			var sizeChangedObserved = function () {
@@ -91,6 +111,34 @@
 				if (stlPreview.models_count) stlPreview.set_display(0, newValue);
 			}
 
+			var onShowGridChanged = function(newValue) {
+				props.setAttributes({showGrid: newValue});
+				if (stlPreview.models_count) stlPreview.set_grid(newValue);
+			}
+
+			var onAutoRotateChanged = function(newValue) {
+				props.setAttributes({autoRotate: newValue});
+				if (stlPreview.models_count) stlPreview.set_auto_rotate(newValue);
+			}
+
+			var onShowBorderChanged = function(newValue) {
+				props.setAttributes({showBorder: newValue});
+			}
+
+			var onSolidBackgroundChanged = function(newValue) {
+				props.setAttributes({solidBackground: newValue});
+				if (newValue) {
+					if (stlPreview.models_count) stlPreview.set_bg_color(attributes.backgroundColor);
+				} else {
+					if (stlPreview.models_count) stlPreview.set_bg_color('transparent');
+				}
+			}
+
+			var onBackgroundColorChanged = function(newColor) {
+				props.setAttributes({backgroundColor: newColor.hex});
+				if (attributes.solidBackground && stlPreview.models_count) stlPreview.set_bg_color(newColor.hex);
+			}
+
 			return [el('div',
 				{ className: props.className },
 				el('div',
@@ -114,7 +162,7 @@
 					]
 				),
 				el('div', { id: 'stl-preview-' + attributes.blockID,
-					className: "embed-stl-size-" + attributes.blockSize})
+					className: "embed-stl-size-" + attributes.blockSize + (attributes.showBorder ? " embed-stl-yes-border" : "")})
 			),
 			el(InspectorControls, {}, el(PanelBody, {title: __('Settings')}, [
 				el(SelectControl, {label: __('Size'), value: attributes.blockSize, options: [
@@ -126,7 +174,12 @@
 					{value: 'smooth', label: __('Smooth')},
 					{value: 'wireframe', label: __('Wireframe')}], onChange: onDisplayModeChange}),
 				el('label', {}, __('Model Color')),
-				el(ColorPicker, {color: attributes.modelColor, disableAlpha: true, onChangeComplete: onModelColorChanged})
+				el(ColorPicker, {color: attributes.modelColor, disableAlpha: true, onChangeComplete: onModelColorChanged}),
+				el(ToggleControl, {label: __('Show XY Grid'), checked: attributes.showGrid, onChange: onShowGridChanged}),
+				el(ToggleControl, {label: __('Auto Rotate'), checked: attributes.autoRotate, onChange: onAutoRotateChanged}),
+				el(ToggleControl, {label: __('Viewport Border'), checked: attributes.showBorder, onChange: onShowBorderChanged}),
+				el(ToggleControl, {label: __('Solid Background'), checked: attributes.solidBackground, onChange: onSolidBackgroundChanged}),
+				el(ColorPicker, {className: attributes.solidBackground ? "" : "embed-stl-hidden", color: attributes.backgroundColor, disableAlpha: true, onChangeComplete: onBackgroundColorChanged})
 				])
 			)];
 		}
