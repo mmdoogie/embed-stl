@@ -8,7 +8,7 @@
 	var SelectControl = components.SelectControl;
 	var ColorPicker = components.ColorPicker;
 	var ToggleControl = components.ToggleControl;
-	var stlPreview;
+	var viewers = {};
 
 	blocks.registerBlockType( 'embed-stl/embed-stl', {
 		title: __( 'Embed STL'),
@@ -63,6 +63,8 @@
 			if (!attributes.displayMode) props.setAttributes({displayMode: 'flat'});
 			if (!attributes.backgroundColor) props.setAttributes({backgroundColor: '#ffffff'});
 
+			var stlPreview;
+
 			var modelsLoadedCallback = function() {
 				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
 				stlPreview.set_color(0, attributes.modelColor);
@@ -79,12 +81,16 @@
 
 			var setupPreview = function() {
 				if (!stlPreview) {
-					var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
-					if (previewElement) {
-						stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1});
-						if (attributes.mediaURL) stlPreview.add_model({id: 0, filename:attributes.mediaURL});
-						const obs = new MutationObserver(sizeChangedObserved);
-						obs.observe(previewElement, {attributes: true});
+					if (attributes.blockID) stlPreview = viewers[attributes.blockID];
+					if (!stlPreview) {
+						var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
+						if (previewElement) {
+							stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1});
+							viewers[attributes.blockID] = stlPreview;
+							if (attributes.mediaURL) stlPreview.add_model({id: 0, filename:attributes.mediaURL});
+							const obs = new MutationObserver(sizeChangedObserved);
+							obs.observe(previewElement, {attributes: true});
+						}
 					}
 				}
 			}
