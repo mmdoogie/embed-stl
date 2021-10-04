@@ -6,6 +6,7 @@
 	var InspectorControls = blockEditor.InspectorControls;
 	var PanelBody = components.PanelBody;
 	var SelectControl = components.SelectControl;
+	var RangeControl = components.RangeControl;
 	var ColorPicker = components.ColorPicker;
 	var ToggleControl = components.ToggleControl;
 	var viewers = {};
@@ -72,6 +73,22 @@
 			hideOverlayIcon: {
 				type: 'boolean',
 				default: false
+			},
+			defaultRotateX: {
+				type: 'number',
+				default: 0
+			},
+			defaultRotateY: {
+				type: 'number',
+				default: 0
+			},
+			defaultRotateZ: {
+				type: 'number',
+				default: 0
+			},
+			defaultZoomMod: {
+				type: 'number',
+				default: 0
 			}
 		},
 
@@ -88,14 +105,22 @@
 				stlPreview.set_grid(attributes.showGrid);
 				stlPreview.set_auto_rotate(attributes.autoRotate);
 				if (attributes.solidBackground) stlPreview.set_bg_color(attributes.backgroundColor);
+				stlPreview.models[0].mesh.rotation.x = attributes.defaultRotateX / 57.2958;
+				stlPreview.models[0].mesh.rotation.y = attributes.defaultRotateY / 57.2958;
+				stlPreview.models[0].mesh.rotation.z = attributes.defaultRotateZ / 57.2958;
+				stlPreview.models[0].mesh.scale.setScalar(attributes.defaultZoomMod < 0 ? -100 / (attributes.defaultZoomMod - 100) : (attributes.defaultZoomMod / 100) + 1);
 			}
 
-			var sizeChangedObserved = function () {
-				stlPreview.do_resize();
+			var resetCamera = function() {
 				c = stlPreview.get_camera_state();
 				c.position = {...c.position, x:0, y:0, z:stlPreview.calc_z_for_auto_zoom()};
 				c.target = {...c.target, x:0, y:0, z:0};
 				stlPreview.set_camera_state(c);
+			}
+
+			var sizeChangedObserved = function () {
+				stlPreview.do_resize();
+				resetCamera();
 			}
 
 			var setupPreview = function() {
@@ -111,10 +136,7 @@
 							obs.observe(previewElement, {attributes: true});
 							var recenterView = function (id, evt, dist, ct) {
 								if (ct != 11) return;
-								c = stlPreview.get_camera_state();
-								c.position = {...c.position, x:0, y:0, z:stlPreview.calc_z_for_auto_zoom()};
-								c.target = {...c.target, x:0, y:0, z:0};
-								stlPreview.set_camera_state(c);
+								resetCamera();
 							}
 							stlPreview.set_on_model_mousedown(recenterView);
 							window.addEventListener('resize', function() { recenterView(0, 0, 0, 11); });
@@ -137,6 +159,30 @@
 			var onSizeSelectChange = function(newValue) {
 				props.setAttributes({blockSize: newValue});
 			};
+
+			var onModelAngleXChanged = function(newAngle) {
+				props.setAttributes({defaultRotateX: newAngle});
+				if (stlPreview.models_count) stlPreview.models[0].mesh.rotation.x = newAngle / 57.2958;
+				resetCamera();
+			}
+
+			var onModelAngleYChanged = function(newAngle) {
+				props.setAttributes({defaultRotateY: newAngle});
+				if (stlPreview.models_count) stlPreview.models[0].mesh.rotation.y = newAngle / 57.2958;
+				resetCamera();
+			}
+
+			var onModelAngleZChanged = function(newAngle) {
+				props.setAttributes({defaultRotateZ: newAngle});
+				if (stlPreview.models_count) stlPreview.models[0].mesh.rotation.z = newAngle / 57.2958;
+				resetCamera();
+			}
+
+			var onModelZoomChanged = function(newZoom) {
+				props.setAttributes({defaultZoomMod: newZoom});
+				if (stlPreview.models_count) stlPreview.models[0].mesh.scale.setScalar(newZoom < 0 ? -100 / (newZoom - 100) : (newZoom / 100) + 1);
+				resetCamera();
+			}
 
 			var onModelColorChanged = function(newColor) {
 				props.setAttributes({modelColor: newColor.hex});
@@ -222,6 +268,11 @@
 					{value: 'wireframe', label: __('Wireframe')}], onChange: onDisplayModeChange}),
 				el('label', {}, __('Model Color')),
 				el(ColorPicker, {color: attributes.modelColor, disableAlpha: true, onChangeComplete: onModelColorChanged}),
+				el('label', {}, __('Initial Rotation')),
+				el(RangeControl, {label: __('X'), value: attributes.defaultRotateX, onChange: onModelAngleXChanged, allowReset: true, resetFallbackValue: 0, min: -180, max: 180}),
+				el(RangeControl, {label: __('Y'), value: attributes.defaultRotateY, onChange: onModelAngleYChanged, allowReset: true, resetFallbackValue: 0, min: -180, max: 180}),
+				el(RangeControl, {label: __('Z'), value: attributes.defaultRotateZ, onChange: onModelAngleZChanged, allowReset: true, resetFallbackValue: 0, min: -180, max: 180}),
+				el(RangeControl, {label: __('Zoom'), value: attributes.defaultZoomMod, onChange: onModelZoomChanged, allowReset: true, resetFallbackValue: 0, min: -200, max: 200}),
 				el(ToggleControl, {label: __('Show XY Grid'), checked: attributes.showGrid, onChange: onShowGridChanged}),
 				el(ToggleControl, {label: __('Auto Rotate'), checked: attributes.autoRotate, onChange: onAutoRotateChanged}),
 				el(ToggleControl, {label: __('Viewport Border'), checked: attributes.showBorder, onChange: onShowBorderChanged}),
