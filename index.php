@@ -87,9 +87,10 @@ function embed_stl_render_callback($attrs, $content) {
 		printf('<img src="%s" class="embed-stl-cube-icon">' . PHP_EOL, $s_iconUrl);
 	}
 	echo('</div>'  . PHP_EOL . '<script>' . PHP_EOL);
-	printf('var stlView_%1$s = new StlViewer(document.getElementById("stl-preview-%1$s"), %2$s);' . PHP_EOL, $s_blockID, wp_json_encode($viewerParams));
-	printf('function stlView_%1$s_recenter(id,evt,dist,ct) { if (ct != 11) return; v=stlView_%1$s; c=v.get_camera_state(); c.position={...c.position, x:0, y:0, z:v.calc_z_for_auto_zoom()}; c.target={...c.target, x:0, y:0, z:0}; v.set_camera_state(c);};', $s_blockID);
-	printf('stlView_%1$s.set_on_model_mousedown(stlView_%1$s_recenter);', $s_blockID);
+	printf('var e = document.getElementById("stl-preview-%1$s"); var stlView_%1$s = new StlViewer(e, %2$s);' . PHP_EOL, $s_blockID, wp_json_encode($viewerParams));
+	printf('function stlView_%1$s_recenter(id,evt,dist,ct) { if (ct != 11) return; v=stlView_%1$s; c=v.get_camera_state(); c.position={...c.position, x:0, y:0, z:v.calc_z_for_auto_zoom()}; c.target={...c.target, x:0, y:0, z:0}; v.set_camera_state(c);};' . PHP_EOL, $s_blockID);
+	printf('window.addEventListener("resize", function() { stlView_%1$s_recenter(0,0,0,11); });' . PHP_EOL, $s_blockID);
+	printf('stlView_%1$s.set_on_model_mousedown(stlView_%1$s_recenter);' . PHP_EOL, $s_blockID);
 	echo('</script>' . PHP_EOL . '</div>' . PHP_EOL);
 
 	$out = ob_get_contents();

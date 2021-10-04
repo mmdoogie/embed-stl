@@ -112,6 +112,7 @@
 								stlPreview.set_camera_state(c);
 							}
 							stlPreview.set_on_model_mousedown(recenterView);
+							window.addEventListener('resize', function() { recenterView(0, 0, 0, 11); });
 						}
 					}
 				}
