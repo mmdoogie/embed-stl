@@ -62,35 +62,24 @@ function embed_stl_add_post_mime($mime_types=array()) {
 }
 
 function embed_stl_render_callback($attrs, $content) {
-	$s_blockID = esc_attr($attrs['blockID']);
-	$s_blockSize = esc_attr($attrs['blockSize']);
-	$s_showBorder =  $attrs['showBorder'] ? 'embed-stl-yes-border' : '';
-	$s_iconUrl = esc_url(plugins_url('/public/img/icon.svg', __FILE__));
-	$s_mediaURL = esc_url($attrs['mediaURL']);
-	$s_modelColor = esc_attr($attrs['modelColor']);
-	$s_displayMode = esc_attr($attrs['displayMode']);
-	$s_bgColor = $attrs['solidBackground'] ? esc_attr($attrs['backgroundColor']) : 'transparent';
-	$s_autoRotate = $attrs['autoRotate'] ? true : false;
-	$s_showGrid = $attrs['showGrid'] ? true : false;
-
 	$viewerParams = array("models" => array(
-		array("id" => 0, "filename" => $s_mediaURL, "color" => $s_modelColor, "display" => $s_displayMode)),
-		"bg_color" => $s_bgColor, "auto_rotate" => $s_autoRotate, "grid" => $s_showGrid,
+		array("id" => 0, "filename" => esc_url($attrs['mediaURL']), "color" => esc_attr($attrs['modelColor']), "display" => esc_attr($attrs['displayMode']))),
+		"bg_color" => esc_attr($attrs['solidBackground'] ? $attrs['backgroundColor'] : 'transparent'), "auto_rotate" => $attrs['autoRotate'] ? true : false, "grid" => $attrs['showGrid'] ? true : false,
 		"allow_drag_and_drop" => false, "send_no_model_click_event" => true
 	);
 
 	ob_start();
 
 	echo('<div class="wp-block-embed-stl-embed-stl">' . PHP_EOL);
-	printf('<div id="stl-preview-%s" class="embed-stl-target embed-stl-size-%s %s">' . PHP_EOL, $s_blockID, $s_blockSize, $s_showBorder);
+	printf('<div id="stl-preview-%s" class="embed-stl-target embed-stl-size-%s %s">' . PHP_EOL, esc_attr($attrs['blockID']), esc_attr($attrs['blockSize']), esc_attr($attrs['showBorder'] ? 'embed-stl-yes-border' : ''));
 	if (!$attrs['hideOverlayIcon']) {
-		printf('<img src="%s" class="embed-stl-cube-icon">' . PHP_EOL, $s_iconUrl);
+		printf('<img src="%s" class="embed-stl-cube-icon">' . PHP_EOL, esc_url(plugins_url('/public/img/icon.svg', __FILE__)));
 	}
 	echo('</div>'  . PHP_EOL . '<script>' . PHP_EOL);
-	printf('var e = document.getElementById("stl-preview-%1$s"); var stlView_%1$s = new StlViewer(e, %2$s);' . PHP_EOL, $s_blockID, wp_json_encode($viewerParams));
-	printf('function stlView_%1$s_recenter(id,evt,dist,ct) { if (ct != 11) return; v=stlView_%1$s; c=v.get_camera_state(); c.position={...c.position, x:0, y:0, z:v.calc_z_for_auto_zoom()}; c.target={...c.target, x:0, y:0, z:0}; v.set_camera_state(c);};' . PHP_EOL, $s_blockID);
-	printf('window.addEventListener("resize", function() { stlView_%1$s_recenter(0,0,0,11); });' . PHP_EOL, $s_blockID);
-	printf('stlView_%1$s.set_on_model_mousedown(stlView_%1$s_recenter);' . PHP_EOL, $s_blockID);
+	printf('var e = document.getElementById("stl-preview-%1$s"); var stlView_%1$s = new StlViewer(e, %2$s);' . PHP_EOL, esc_attr($attrs['blockID']), wp_json_encode($viewerParams));
+	printf('function stlView_%1$s_recenter(id,evt,dist,ct) { if (ct != 11) return; v=stlView_%1$s; c=v.get_camera_state(); c.position={...c.position, x:0, y:0, z:v.calc_z_for_auto_zoom()}; c.target={...c.target, x:0, y:0, z:0}; v.set_camera_state(c);};' . PHP_EOL, esc_attr($attrs['blockID']));
+	printf('window.addEventListener("resize", function() { stlView_%1$s_recenter(0,0,0,11); });' . PHP_EOL, esc_attr($attrs['blockID']));
+	printf('stlView_%1$s.set_on_model_mousedown(stlView_%1$s_recenter);' . PHP_EOL, esc_attr($attrs['blockID']));
 	echo('</script>' . PHP_EOL . '</div>' . PHP_EOL);
 
 	$out = ob_get_contents();
