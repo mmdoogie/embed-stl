@@ -57,22 +57,33 @@ function embed_stl_add_post_mime($mime_types=array()) {
 }
 
 function embed_stl_render_callback($attrs, $content) {
+	$s_blockID = esc_attr($attrs['blockID']);
+	$s_blockSize = esc_attr($attrs['blockSize']);
+	$s_showBorder =  $attrs['showBorder'] ? 'embed-stl-yes-border' : '';
+	$s_iconUrl = esc_url(plugins_url('/public/img/icon.svg', __FILE__));
+	$s_mediaURL = esc_url($attrs['mediaURL']);
+	$s_modelColor = esc_attr($attrs['modelColor']);
+	$s_displayMode = esc_attr($attrs['displayMode']);
+	$s_bgColor = $attrs['solidBackground'] ? esc_attr($attrs['backgroundColor']) : 'transparent';
+	$s_autoRotate = $attrs['autoRotate'] ? true : false;
+	$s_showGrid = $attrs['showGrid'] ? true : false;
+
+	$viewerParams = array("models" => array(
+		array("id" => 0, "filename" => $s_mediaURL, "color" => $s_modelColor, "display" => $s_displayMode)),
+		"bg_color" => $s_bgColor, "auto_rotate" => $s_autoRotate, "grid" => $s_showGrid
+	);
+
 	ob_start();
-?>
-<div class="wp-block-embed-stl-embed-stl">
-	<div id="stl-preview-<?=$attrs['blockID']?>" class="embed-stl-target embed-stl-size-<?=$attrs['blockSize']?> <?= $attrs['showBorder'] ? 'embed-stl-yes-border' : ''?>">
-<?php if (!$attrs['hideOverlayIcon']) { ?>
-	<img src="<?=plugins_url('/public/img/icon.svg',__FILE__)?>" class="embed-stl-cube-icon">
-<?php } ?>
-	</div>
-	<script>
-		var e = document.getElementById("stl-preview-<?=$attrs['blockID']?>");
-		var stlView_<?=$attrs['blockID']?> = new StlViewer(e, {
-			models: [{id: 0, filename: "<?=$attrs['mediaURL']?>", color: "<?=$attrs['modelColor']?>", display: "<?=$attrs['displayMode']?>"}],
-			bg_color: "<?=$attrs['solidBackground'] ? $attrs['backgroundColor'] : 'transparent'?>", auto_rotate: <?=$attrs['autoRotate'] ? 'true' : 'false'?>, grid: <?=$attrs['showGrid'] ? 'true' : 'false'?>});
-	</script>
-</div>
-<?php
+
+	echo('<div class="wp-block-embed-stl-embed-stl">' . PHP_EOL);
+	printf('<div id="stl-preview-%s" class="embed-stl-target embed-stl-size-%s %s">' . PHP_EOL, $s_blockID, $s_blockSize, $s_showBorder);
+	if (!$attrs['hideOverlayIcon']) {
+		printf('<img src="%s" class="embed-stl-cube-icon">' . PHP_EOL, $s_iconUrl);
+	}
+	echo('</div>'  . PHP_EOL . '<script>' . PHP_EOL);
+	printf('var stlView_%1$s = new StlViewer(document.getElementById("stl-preview-%1$s"), %2$s);' . PHP_EOL, $s_blockID, wp_json_encode($viewerParams));
+	echo('</script>' . PHP_EOL . '</div>' . PHP_EOL);
+
 	$out = ob_get_contents();
 	ob_end_clean();
 	return $out;
