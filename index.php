@@ -18,14 +18,19 @@ add_action('init', 'embed_stl_load_textdomain');
 add_action('init', 'embed_stl_register_block');
 add_filter('upload_mimes', 'embed_stl_add_upload_mime');
 add_filter('post_mime_types', 'embed_stl_add_post_mime');
-wp_register_script('embed-stl-stl-viewer', plugins_url('/public/js/stl_viewer.min.js', __FILE__));
-wp_enqueue_script('embed-stl-stl-viewer');
 
 function embed_stl_load_textdomain() {
 	load_plugin_textdomain('embed-stl', false, basename(__DIR__) . '/languages');
 }
 
 function embed_stl_register_block() {
+	wp_register_script(
+		'embed-stl-stl-viewer',
+		plugins_url('/public/js/stl_viewer.min.js', __FILE__),
+		array(),
+		'1.13'
+	);
+
 	wp_register_script(
 		'embed-stl',
 		plugins_url('block.js', __FILE__),
@@ -40,7 +45,7 @@ function embed_stl_register_block() {
 		filemtime(plugin_dir_path(__FILE__) . 'style.css')
 	);
 	
-	register_block_type('embed-stl/embed-stl', array('style' => 'embed-stl', 'editor_script' => 'embed-stl', 'render_callback' => 'embed_stl_render_callback'));
+	register_block_type('embed-stl/embed-stl', array('style' => 'embed-stl', 'script' => 'embed-stl-stl-viewer', 'editor_script' => 'embed-stl', 'render_callback' => 'embed_stl_render_callback'));
 	if (function_exists('wp_set_script_translations')) {
 		wp_set_script_translations('embed-stl', 'embed-stl');
 	}
