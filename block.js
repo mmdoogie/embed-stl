@@ -87,7 +87,10 @@
 
 			var sizeChangedObserved = function () {
 				stlPreview.do_resize();
-				stlPreview.camera.position.z = stlPreview.calc_z_for_auto_zoom();
+				c = stlPreview.get_camera_state();
+				c.position = {...c.position, x:0, y:0, z:stlPreview.calc_z_for_auto_zoom()};
+				c.target = {...c.target, x:0, y:0, z:0};
+				stlPreview.set_camera_state(c);
 			}
 
 			var setupPreview = function() {
@@ -96,11 +99,19 @@
 					if (!stlPreview) {
 						var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
 						if (previewElement) {
-							stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1});
+							stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1, allow_drag_and_drop: false, send_no_model_click_event: true});
 							viewers[attributes.blockID] = stlPreview;
 							if (attributes.mediaURL) stlPreview.add_model({id: 0, filename:attributes.mediaURL});
 							const obs = new MutationObserver(sizeChangedObserved);
 							obs.observe(previewElement, {attributes: true});
+							var recenterView = function (id, evt, dist, ct) {
+								if (ct != 11) return;
+								c = stlPreview.get_camera_state();
+								c.position = {...c.position, x:0, y:0, z:stlPreview.calc_z_for_auto_zoom()};
+								c.target = {...c.target, x:0, y:0, z:0};
+								stlPreview.set_camera_state(c);
+							}
+							stlPreview.set_on_model_mousedown(recenterView);
 						}
 					}
 				}

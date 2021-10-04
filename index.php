@@ -75,7 +75,8 @@ function embed_stl_render_callback($attrs, $content) {
 
 	$viewerParams = array("models" => array(
 		array("id" => 0, "filename" => $s_mediaURL, "color" => $s_modelColor, "display" => $s_displayMode)),
-		"bg_color" => $s_bgColor, "auto_rotate" => $s_autoRotate, "grid" => $s_showGrid
+		"bg_color" => $s_bgColor, "auto_rotate" => $s_autoRotate, "grid" => $s_showGrid,
+		"allow_drag_and_drop" => false, "send_no_model_click_event" => true
 	);
 
 	ob_start();
@@ -87,6 +88,8 @@ function embed_stl_render_callback($attrs, $content) {
 	}
 	echo('</div>'  . PHP_EOL . '<script>' . PHP_EOL);
 	printf('var stlView_%1$s = new StlViewer(document.getElementById("stl-preview-%1$s"), %2$s);' . PHP_EOL, $s_blockID, wp_json_encode($viewerParams));
+	printf('function stlView_%1$s_recenter(id,evt,dist,ct) { if (ct != 11) return; v=stlView_%1$s; c=v.get_camera_state(); c.position={...c.position, x:0, y:0, z:v.calc_z_for_auto_zoom()}; c.target={...c.target, x:0, y:0, z:0}; v.set_camera_state(c);};', $s_blockID);
+	printf('stlView_%1$s.set_on_model_mousedown(stlView_%1$s_recenter);', $s_blockID);
 	echo('</script>' . PHP_EOL . '</div>' . PHP_EOL);
 
 	$out = ob_get_contents();
