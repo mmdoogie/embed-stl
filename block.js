@@ -125,6 +125,7 @@
 
 			var onSelectImage = function( media ) {
 				if (stlPreview.models_count) stlPreview.remove_model(0);
+				stlPreview.all_loaded_callback = modelsLoadedCallback;
 				if (media.url) stlPreview.add_model({id: 0, filename:media.url});
 
 				return props.setAttributes( {
