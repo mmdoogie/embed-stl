@@ -38,41 +38,46 @@
 				type: 'string'
 			},
 			blockSize: {
-				type: 'string'
+				type: 'string',
+				default: 'sm'
 			},
 			modelColor: {
-				type: 'string'
+				type: 'string',
+				default: '#777777'
 			},
 			displayMode: {
-				type: 'string'
+				type: 'string',
+				default: 'flat'
 			},
 			showGrid: {
-				type: 'boolean'
+				type: 'boolean',
+				default: false
 			},
 			autoRotate: {
-				type: 'boolean'
+				type: 'boolean',
+				default: false
 			},
 			showBorder: {
-				type: 'boolean'
+				type: 'boolean',
+				default: true
 			},
 			solidBackground: {
-				type: 'boolean'
+				type: 'boolean',
+				default: false
 			},
 			backgroundColor: {
-				type: 'string'
+				type: 'string',
+				default: '#ffffff'
 			},
 			hideOverlayIcon: {
-				type: 'boolean'
+				type: 'boolean',
+				default: false
 			}
 		},
 
 		edit: function( props ) {
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
-			if (!attributes.blockSize) props.setAttributes({blockSize: 'sm'});
-			if (!attributes.modelColor) props.setAttributes({modelColor: '#777777'});
-			if (!attributes.displayMode) props.setAttributes({displayMode: 'flat'});
-			if (!attributes.backgroundColor) props.setAttributes({backgroundColor: '#ffffff'});
 
 			var stlPreview;
 
