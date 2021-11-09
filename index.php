@@ -5,7 +5,7 @@
  * Plugin Name: Embed STL
  * Plugin URI: https://github.com/mmdoogie/embed-stl
  * Description: Adds STL as a media type for uploads, provides editor block for embeddable viewer based on viewstl plugin
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires at least: 5.8
  * Requires PHP: 7.0
  * Author: mmdoogie

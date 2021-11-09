@@ -19,7 +19,7 @@
 	el('path', {d: 'M80.398 115.155a2.81 2.81 0 0 0 2.258-1.129 2.82 2.82 0 0 0-.564-3.951l-8.275-6.209 8.275-6.209a2.82 2.82 0 0 0 .564-3.951c-.937-1.247-2.704-1.496-3.951-.564l-11.289 8.467a2.82 2.82 0 0 0 0 4.516l11.289 8.467c.508.378 1.101.564 1.693.564z'})
 	]);
 
-	blocks.registerBlockType(  'embed-stl/embed-stl', {
+	blocks.registerBlockType( 'embed-stl/embed-stl', {
 		title: __( 'Embed STL'),
 		icon: cubeIcon,
 		category: 'media',

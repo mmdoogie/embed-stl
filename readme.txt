@@ -4,7 +4,7 @@ Contributors: mmdoogie
 Tags: stl, 3d, block
 Requires at least: 5.8
 Tested up to: 5.8
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Requires PHP: 7.0
 License: MIT
 
@@ -33,11 +33,19 @@ Right now just STL.  A couple others like OBJ or 3MF may be easily added.  Other
 
 == Changelog ==
 
+= 1.0.1 =
+
+* Fix inline install from block editor
+
 = 1.0.0 =
 
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.0.1 = 
+
+Behind-the-scenes changes only
 
 = 1.0.0 =
 
