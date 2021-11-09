@@ -20,6 +20,8 @@
 	]);
 
 	blocks.registerBlockType( 'embed-stl/embed-stl', {
+		title: __('Embed STL'),
+		category: 'media',
 		icon: cubeIcon,
 		edit: function( props ) {
 			var attributes = props.attributes;
