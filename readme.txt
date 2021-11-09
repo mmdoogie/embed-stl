@@ -28,6 +28,9 @@ Right now just STL.  A couple others like OBJ or 3MF may be easily added.  Other
 
 == Screenshots ==
 
+1. Block in editor with media selected.
+2. Block options for customization.
+
 == Changelog ==
 
 = 1.0.0 =
