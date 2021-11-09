@@ -20,78 +20,7 @@
 	]);
 
 	blocks.registerBlockType( 'embed-stl/embed-stl', {
-		title: __( 'Embed STL'),
 		icon: cubeIcon,
-		category: 'media',
-		keywords: ['3d', 'model', 'stl'],
-		
-		attributes: {
-			mediaID: {
-				type: 'number'
-			},
-			mediaDesc: {
-				type: 'string'
-			},
-			mediaURL: {
-				type: 'string'
-			},
-			blockID: {
-				type: 'string'
-			},
-			blockSize: {
-				type: 'string',
-				default: 'sm'
-			},
-			modelColor: {
-				type: 'string',
-				default: '#777777'
-			},
-			displayMode: {
-				type: 'string',
-				default: 'flat'
-			},
-			showGrid: {
-				type: 'boolean',
-				default: false
-			},
-			autoRotate: {
-				type: 'boolean',
-				default: false
-			},
-			showBorder: {
-				type: 'boolean',
-				default: true
-			},
-			solidBackground: {
-				type: 'boolean',
-				default: false
-			},
-			backgroundColor: {
-				type: 'string',
-				default: '#ffffff'
-			},
-			hideOverlayIcon: {
-				type: 'boolean',
-				default: false
-			},
-			defaultRotateX: {
-				type: 'number',
-				default: 0
-			},
-			defaultRotateY: {
-				type: 'number',
-				default: 0
-			},
-			defaultRotateZ: {
-				type: 'number',
-				default: 0
-			},
-			defaultZoomMod: {
-				type: 'number',
-				default: 0
-			}
-		},
-
 		edit: function( props ) {
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});

@@ -1,0 +1,80 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 1,
+	"name": "embed-stl/embed-stl",
+	"title": "Embed STL",
+	"category": "media",
+	"description": "Embeds an STL model as an interactive 3D preview",
+	"keywords": ["3d", "model", "stl"],
+	"version": "1.0.0",
+	"textdomain": "embed-stl",
+	"attributes": {
+		"mediaID": {
+			"type": "number"
+		},
+		"mediaDesc": {
+			"type": "string"
+		},
+		"mediaURL": {
+			"type": "string"
+		},
+		"blockID": {
+			"type": "string"
+		},
+		"blockSize": {
+			"type": "string",
+			"default": "sm"
+		},
+		"modelColor": {
+			"type": "string",
+			"default": "#777777"
+		},
+		"displayMode": {
+			"type": "string",
+			"default": "flat"
+		},
+		"showGrid": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoRotate": {
+			"type": "boolean",
+			"default": false
+		},
+		"showBorder": {
+			"type": "boolean",
+			"default": true
+		},
+		"solidBackground": {
+			"type": "boolean",
+			"default": false
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "#ffffff"
+		},
+		"hideOverlayIcon": {
+			"type": "boolean",
+			"default": false
+		},
+		"defaultRotateX": {
+			"type": "number",
+			"default": 0
+		},
+		"defaultRotateY": {
+			"type": "number",
+			"default": 0
+		},
+		"defaultRotateZ": {
+			"type": "number",
+			"default": 0
+		},
+		"defaultZoomMod": {
+			"type": "number",
+			"default": 0
+		}
+	},
+	"editorScript": "file:./block.js",
+	"script": "file:./public/js/stl_viewer.min.js",
+	"style": "file:./style.css"
+}

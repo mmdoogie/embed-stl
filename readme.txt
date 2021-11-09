@@ -2,7 +2,7 @@
 
 Contributors: mmdoogie
 Tags: stl, 3d, block
-Requires at least: 5.0
+Requires at least: 5.8
 Tested up to: 5.8
 Stable tag: 1.0.0
 Requires PHP: 7.0
