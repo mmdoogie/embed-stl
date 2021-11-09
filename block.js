@@ -19,10 +19,79 @@
 	el('path', {d: 'M80.398 115.155a2.81 2.81 0 0 0 2.258-1.129 2.82 2.82 0 0 0-.564-3.951l-8.275-6.209 8.275-6.209a2.82 2.82 0 0 0 .564-3.951c-.937-1.247-2.704-1.496-3.951-.564l-11.289 8.467a2.82 2.82 0 0 0 0 4.516l11.289 8.467c.508.378 1.101.564 1.693.564z'})
 	]);
 
-	blocks.registerBlockType( 'embed-stl/embed-stl', {
-		title: __('Embed STL'),
-		category: 'media',
+	blocks.registerBlockType(  'embed-stl/embed-stl', {
+		title: __( 'Embed STL'),
 		icon: cubeIcon,
+		category: 'media',
+		keywords: ['3d', 'model', 'stl'],
+		
+		attributes: {
+			mediaID: {
+				type: 'number'
+			},
+			mediaDesc: {
+				type: 'string'
+			},
+			mediaURL: {
+				type: 'string'
+			},
+			blockID: {
+				type: 'string'
+			},
+			blockSize: {
+				type: 'string',
+				default: 'sm'
+			},
+			modelColor: {
+				type: 'string',
+				default: '#777777'
+			},
+			displayMode: {
+				type: 'string',
+				default: 'flat'
+			},
+			showGrid: {
+				type: 'boolean',
+				default: false
+			},
+			autoRotate: {
+				type: 'boolean',
+				default: false
+			},
+			showBorder: {
+				type: 'boolean',
+				default: true
+			},
+			solidBackground: {
+				type: 'boolean',
+				default: false
+			},
+			backgroundColor: {
+				type: 'string',
+				default: '#ffffff'
+			},
+			hideOverlayIcon: {
+				type: 'boolean',
+				default: false
+			},
+			defaultRotateX: {
+				type: 'number',
+				default: 0
+			},
+			defaultRotateY: {
+				type: 'number',
+				default: 0
+			},
+			defaultRotateZ: {
+				type: 'number',
+				default: 0
+			},
+			defaultZoomMod: {
+				type: 'number',
+				default: 0
+			}
+		},
+		
 		edit: function( props ) {
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
