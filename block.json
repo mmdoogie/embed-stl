@@ -1,12 +1,12 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 1,
+	"apiVersion": 3,
 	"name": "embed-stl/embed-stl",
 	"title": "Embed STL",
 	"category": "media",
 	"description": "Embeds an STL model as an interactive 3D preview",
 	"keywords": ["3d", "model", "stl"],
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"textdomain": "embed-stl",
 	"attributes": {
 		"mediaID": {
@@ -74,7 +74,7 @@
 			"default": 0
 		}
 	},
-	"editorScript": "file:./block.js",
-	"script": "file:./public/js/stl_viewer.min.js",
+	"editorScript": ["file:./block.js", "embed-stl-viewer"],
+	"viewScript": "embed-stl-viewer",
 	"style": "file:./style.css"
 }

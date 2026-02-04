@@ -93,6 +93,7 @@
 		},
 		
 		edit: function( props ) {
+			var blockProps = blockEditor.useBlockProps();
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
 
@@ -232,7 +233,7 @@
 			if (attributes.mediaURL) setupPreview();
 
 			return [el('div',
-				{ className: props.className },
+				blockProps,
 				el('div',
 					{ className: 'selected-model' },
 					[ el(MediaUpload, {
@@ -285,7 +286,7 @@
 	} );
 } )(
 	window.wp.blocks,
-	window.wp.editor,
+	window.wp.blockEditor,
 	window.wp.i18n,
 	window.wp.element,
 	window.wp.components,

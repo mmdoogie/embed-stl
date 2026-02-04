@@ -5,8 +5,8 @@
  * Plugin Name: Embed STL
  * Plugin URI: https://github.com/mmdoogie/embed-stl
  * Description: Adds STL as a media type for uploads, provides editor block for embeddable viewer based on viewstl plugin
- * Version: 1.0.1
- * Requires at least: 5.8
+ * Version: 1.0.2
+ * Requires at least: 6.3
  * Requires PHP: 7.0
  * Author: mmdoogie
  * License: MIT
@@ -26,6 +26,21 @@ function embed_stl_load_textdomain() {
 }
 
 function embed_stl_register_block() {
+	$script_url = plugins_url('/public/js/stl_viewer.min.js', __FILE__);
+	wp_register_script(
+		'embed-stl-viewer',
+		$script_url,
+		array(),
+		'1.13',
+		true
+	);
+
+	wp_add_inline_script(
+		'embed-stl-viewer',
+		'var stl_viewer_script_path = "' . esc_js(plugins_url('/public/js/', __FILE__)) . '";',
+		'before'
+	);
+
 	register_block_type(__DIR__, array('render_callback' => 'embed_stl_render_callback'));
 	if (function_exists('wp_set_script_translations')) {
 		wp_set_script_translations('embed-stl', 'embed-stl');
@@ -56,18 +71,20 @@ function embed_stl_render_callback($attrs, $content) {
 
 	ob_start();
 
-	echo('<div class="wp-block-embed-stl-embed-stl">' . PHP_EOL);
+	echo('<div ' . get_block_wrapper_attributes() . ' >' . PHP_EOL);
 	printf('<div id="stl-preview-%s" class="embed-stl-target embed-stl-size-%s %s">' . PHP_EOL, esc_attr($attrs['blockID']), esc_attr($attrs['blockSize']), esc_attr($attrs['showBorder'] ? 'embed-stl-yes-border' : ''));
 	if (!$attrs['hideOverlayIcon']) {
 		printf('<img src="%s" class="embed-stl-cube-icon">' . PHP_EOL, esc_url(plugins_url('/public/img/icon.svg', __FILE__)));
 	}
 	echo('</div>'  . PHP_EOL . '<script>' . PHP_EOL);
+	echo('document.addEventListener("DOMContentLoaded", function() {' . PHP_EOL);
 	printf('var e = document.getElementById("stl-preview-%1$s"); var stlView_%1$s = new StlViewer(e, %2$s);' . PHP_EOL, esc_attr($attrs['blockID']), wp_json_encode($viewerParams));
 	printf('function stlView_%1$s_recenter(id,evt,dist,ct) { if (ct != 11) return; v=stlView_%1$s; c=v.get_camera_state(); c.position={...c.position, x:0, y:0, z:v.calc_z_for_auto_zoom()}; c.target={...c.target, x:0, y:0, z:0}; v.set_camera_state(c);};' . PHP_EOL, esc_attr($attrs['blockID']));
 	printf('function stlView_%1$s_orient() { v=stlView_%1$s; m=v.models[0].mesh; m.rotation.x=%2$s; m.rotation.y=%3$s; m.rotation.z=%4$s; m.scale.setScalar(%5$s); };' . PHP_EOL, esc_attr($attrs['blockID']), esc_attr($s_rx), esc_attr($s_ry), esc_attr($s_rz), esc_attr($s_zx));
 	printf('window.addEventListener("resize", function() { stlView_%1$s_recenter(0,0,0,11); });' . PHP_EOL, esc_attr($attrs['blockID']));
 	printf('stlView_%1$s.set_on_model_mousedown(stlView_%1$s_recenter);' . PHP_EOL, esc_attr($attrs['blockID']));
 	printf('stlView_%1$s.all_loaded_callback=stlView_%1$s_orient;' . PHP_EOL, esc_attr($attrs['blockID']));
+	echo('});' . PHP_EOL);
 	echo('</script>' . PHP_EOL . '</div>' . PHP_EOL);
 
 	$out = ob_get_contents();

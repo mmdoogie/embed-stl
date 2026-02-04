@@ -2,9 +2,9 @@
 
 Contributors: mmdoogie
 Tags: stl, 3d, block
-Requires at least: 5.8
-Tested up to: 5.8
-Stable tag: 1.0.1
+Requires at least: 6.3
+Tested up to: 6.9
+Stable tag: 1.0.2
 Requires PHP: 7.0
 License: MIT
 
@@ -33,6 +33,10 @@ Right now just STL.  A couple others like OBJ or 3MF may be easily added.  Other
 
 == Changelog ==
 
+= 1.0.2 =
+
+* Update block to apiVersion 3, fix compatibility with newer versions
+
 = 1.0.1 =
 
 * Fix inline install from block editor
@@ -42,6 +46,10 @@ Right now just STL.  A couple others like OBJ or 3MF may be easily added.  Other
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+
+* Compatibility with WP 6.3+ only
 
 = 1.0.1 = 
 
