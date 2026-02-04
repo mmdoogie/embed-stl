@@ -93,7 +93,8 @@
 		},
 		
 		edit: function( props ) {
-			var blockProps = blockEditor.useBlockProps();
+			var ref = element.useRef();
+			var blockProps = blockEditor.useBlockProps({ref: ref});
 			var attributes = props.attributes;
 			if (!attributes.blockID) props.setAttributes({blockID: props.clientId.replaceAll("-","_")});
 
@@ -127,8 +128,8 @@
 			var setupPreview = function() {
 				if (!stlPreview) {
 					if (attributes.blockID) stlPreview = viewers[attributes.blockID];
-					if (!stlPreview) {
-						var previewElement = document.getElementById('stl-preview-' + attributes.blockID);
+					if (!stlPreview && ref.current) {
+						var previewElement = ref.current.getElementsByClassName("embed-stl-target")[0];
 						if (previewElement) {
 							stlPreview = new StlViewer(previewElement, {all_loaded_callback: modelsLoadedCallback, zoom: 1, allow_drag_and_drop: false, send_no_model_click_event: true});
 							viewers[attributes.blockID] = stlPreview;
@@ -225,8 +226,7 @@
 
 			var onOverlayIconChanged = function(newValue) {
 				props.setAttributes({hideOverlayIcon: newValue});
-
-				var e = document.getElementById('stl-preview-' + attributes.blockID).getElementsByClassName("embed-stl-cube-icon")[0];
+				var e = ref.current.getElementsByClassName("embed-stl-cube-icon")[0];
 				e.classList.toggle("embed-stl-hidden", newValue);
 			}
 
